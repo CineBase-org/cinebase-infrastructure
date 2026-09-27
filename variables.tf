@@ -15,3 +15,5 @@ variable "subnets" {
     public            = bool
   }))
 }
+
+# =============== LOAD BALANCER ================
