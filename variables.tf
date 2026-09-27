@@ -2,6 +2,8 @@ variable "project-name" {
   type = string
 }
 
+# ================== NETWORK ===================
+
 variable "vpc_cidr_block" {
   type = string
 }
@@ -13,3 +15,5 @@ variable "subnets" {
     public            = bool
   }))
 }
+
+# =============== LOAD BALANCER ================
