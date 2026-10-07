@@ -19,13 +19,15 @@ resource "aws_vpc" "vpc" {
 
 
 resource "aws_subnet" "subnets" {
-  vpc_id = aws_vpc.vpc.id
-
   for_each = var.subnets
 
+  vpc_id            = aws_vpc.vpc.id
   cidr_block        = each.value.cidr_block
   availability_zone = each.value.availability_zone
 
+  tags = {
+    Name = "${var.project-name}-${each.key}"
+  }
 }
 
 
