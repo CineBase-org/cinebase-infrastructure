@@ -1,5 +1,6 @@
 variable "project-name" {
-  type = string
+  description = "The name of the project"
+  type        = string
 }
 
 # ================== NETWORK ===================
@@ -15,10 +16,6 @@ variable "subnets" {
     public            = bool
   }))
 }
-
-# =============== LOAD BALANCER ================
-
-
 
 # ================== FRONTEND ===================
 
@@ -45,3 +42,25 @@ variable "github_environment" {
   type        = string
   description = "The GitHub environment to deploy to"
 }
+
+# ================== BACKEND ===================
+
+# variable "ssm_parameter" {
+#   type = string
+# }
+
+# variable "ecs_instance_type" {
+#   type = string
+# }
+
+# variable "public_subnets_ids" {
+#   type = list(string)
+# }
+
+# variable "aws_region" {
+#   type = string
+# }
+
+# variable "backend_image_tag" {
+#   type = string
+# }

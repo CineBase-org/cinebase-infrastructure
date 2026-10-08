@@ -25,3 +25,7 @@ variable "github_organization" {
   type        = string
   description = "GitHub organization name with immutable owner ID"
 }
+
+variable "github_oidc_provider_arn" {
+  type = string
+}

@@ -17,6 +17,7 @@ resource "aws_security_group" "alb-sg" {
   }
 }
 
+
 resource "aws_vpc_security_group_ingress_rule" "alb-sg-ingress" {
   security_group_id = aws_security_group.alb-sg.id
 
@@ -26,12 +27,14 @@ resource "aws_vpc_security_group_ingress_rule" "alb-sg-ingress" {
   to_port     = 80
 }
 
+
 resource "aws_vpc_security_group_egress_rule" "alb-sg-egress" {
   security_group_id = aws_security_group.alb-sg.id
 
   cidr_ipv4   = "0.0.0.0/0" # for now but in the future I can put here IP's mine EC2 SG
   ip_protocol = "-1"
 }
+
 
 resource "aws_lb" "lb-backend" {
   name                             = "${var.project-name}-alb"
