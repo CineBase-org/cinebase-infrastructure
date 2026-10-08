@@ -10,3 +10,11 @@ output "public_subnets_ids" {
     if var.subnets[key].public
   ]
 }
+
+output "private_subnets_ids" {
+  value = [
+    for key, subnet in aws_subnet.subnets :
+    subnet.id
+    if !var.subnets[key].public
+  ]
+}

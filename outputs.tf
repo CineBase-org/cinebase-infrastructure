@@ -31,6 +31,10 @@ output "public_subnets_ids" {
   value = module.network.public_subnets_ids
 }
 
+output "private_subnets_ids" {
+  value = module.network.private_subnets_ids
+}
+
 # === Load Balancer Outputs ===
 
 #  output "alb-gs_id" {

@@ -117,24 +117,15 @@ resource "aws_s3_bucket_policy" "frontend_policy" {
 }
 
 # ======= GitHub Actions role ========
-
-resource "aws_iam_openid_connect_provider" "github" {
-  url = "https://token.actions.githubusercontent.com"
-
-  client_id_list = [
-    "sts.amazonaws.com"
-  ]
-
-}
-
-
 data "aws_iam_policy_document" "github_assume_role" {
   statement {
     effect = "Allow"
 
     principals {
-      type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
+      type = "Federated"
+      identifiers = [
+        var.github_oidc_provider_arn
+      ]
     }
 
     actions = [
