@@ -1,3 +1,13 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "6.66.0"
+    }
+  }
+}
+
+
 resource "aws_ecr_repository" "image_repository" {
   name                 = "${var.project-name}-ecr"
   force_delete         = true

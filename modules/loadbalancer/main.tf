@@ -36,7 +36,7 @@ resource "aws_vpc_security_group_egress_rule" "alb-sg-egress" {
 }
 
 
-resource "aws_lb" "lb-backend" {
+resource "aws_lb" "lb_backend" {
   name                             = "${var.project-name}-alb"
   load_balancer_type               = "application"
   security_groups                  = [aws_security_group.alb-sg.id]
@@ -48,8 +48,8 @@ resource "aws_lb" "lb-backend" {
 }
 
 
-resource "aws_lb_listener" "lb-backend" {
-  load_balancer_arn = aws_lb.ld-backend.arn
+resource "aws_lb_listener" "lb_backend_listener" {
+  load_balancer_arn = aws_lb.lb_backend.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -64,3 +64,59 @@ resource "aws_lb_listener" "lb-backend" {
 }
 
 #TODO listener and listener rules
+
+resource "aws_lb_target_group" "green" {
+  name = "${var.project-name}-green"
+  protocol = "HTTP"
+  port = 8000
+  vpc_id = var.vpc_id
+  target_type = "instance"
+
+  health_check {
+    path = "/health/"
+    matcher = "200"
+    port = "traffic-port"
+  }
+}
+
+resource "aws_lb_target_group" "blue" {
+  name = "${var.project-name}-blue"
+  protocol = "HTTP"
+  port = 8000
+  vpc_id = var.vpc_id
+  target_type = "instance"
+
+  health_check {
+    path = "/health/"
+    matcher = "200"
+    port = "traffic-port"
+  }
+}
+
+
+resource "aws_lb_listener_rule" "production" {
+  listener_arn = aws_lb_listener.lb_backend_listener.arn
+  priority = 100
+
+  action {
+    type = "forward"
+
+    forward {
+      target_group {
+        arn = aws_lb_target_group.blue.arn
+        weight = 100
+      }
+
+      target_group {
+        arn =aws_lb_target_group.green.arn
+        weight = 0
+      }
+    }
+  }
+
+  condition {
+    path_pattern {
+      values = ["/*"]
+    }
+  }
+}

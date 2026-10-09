@@ -64,3 +64,30 @@ variable "github_environment" {
 # variable "backend_image_tag" {
 #   type = string
 # }
+
+# =================== DATABASE ===================
+
+
+
+# ============== SSM and DATABASE ================
+# add to .tfvars file
+variable "db_password" {
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+  description = "The password for the PostgreSQL database"
+}
+
+variable "django_secret_key" {
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+  description = "The secret key for the Django application"
+}
+
+variable "tmdb_api_key" {
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+  description = "The API key for The Movie Database (TMDB)"
+}
