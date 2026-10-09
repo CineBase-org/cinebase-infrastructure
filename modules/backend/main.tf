@@ -26,23 +26,19 @@ resource "aws_vpc_security_group_ingress_rule" "ecs-ec2-sg-ingress" {
   to_port     = 65535 # dynamic-port-range-end
   # will allow traffic from the ALB to the ECS EC2 instances on ephemeral ports
 }
+output "alb-sg_id" {
+  value = aws_security_group.alb-sg.id
+}
 
+output "alb-sg_arn" {
+  value = aws_security_group.alb-sg.arn
+}
 
 resource "aws_vpc_security_group_egress_rule" "ecs-ec2-sg-egress" {
   security_group_id = aws_security_group.ecs-ec2-sg.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
-}
-
-
-resource "aws_ecs_cluster" "backend_cluster" {
-  name = "${var.project-name}-cluster"
-
-  setting {
-    name  = "containerInsights"
-    value = "disabled"
-  }
 }
 
 
@@ -192,15 +188,42 @@ data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
   }
 }
 
+
+data "aws_iam_policy_document" "ecs_ssm_policy" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ssm:GetParameters"
+    ]
+
+    resources = [
+      var.db_password_arn,
+      var.django_secret_key_arn
+    ]
+  }
+}
+
+
+resource "aws_iam_role_policy" "ecs_ssm_policy" {
+  name = "${var.project-name}-ecs-ssm-policy"
+
+  role   = aws_iam_role.ecs_task_execution_role.id
+  policy = data.aws_iam_policy_document.ecs_ssm_policy.json
+}
+
+
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.project-name}-ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
 }
 
+
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
 
 resource "aws_ecs_task_definition" "task_definition" {
   family                   = "${var.project-name}-task-definition"
@@ -217,13 +240,6 @@ resource "aws_ecs_task_definition" "task_definition" {
       memory            = 768
       essential         = true
 
-      environment = [
-        {
-          name  = "DJANGO_SETTINGS_MODULE"
-          value = "cinema_base.settings.prod"
-        }
-      ]
-
       portMappings = [
         {
           containerPort = 8000
@@ -231,6 +247,7 @@ resource "aws_ecs_task_definition" "task_definition" {
           protocol      = "tcp"
         }
       ]
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -239,8 +256,82 @@ resource "aws_ecs_task_definition" "task_definition" {
           awslogs-stream-prefix = "${var.project-name}-ecs"
         }
       }
+
+      environment = [
+        {
+          name  = "DJANGO_SETTINGS_MODULE"
+          value = "cinema_base.settings.prod"
+        },
+        {
+          name  = "POSTGRES_HOST"
+          value = var.db_address
+        },
+        {
+          name  = "POSTGRES_DB"
+          value = var.db_name
+        },
+        {
+          name  = "POSTGRES_USER"
+          value = var.db_username
+        },
+        {
+          name = "POSTGRES_DB_PORT"
+          value = tostring(var.db_port)
+        },
+        {
+          name = "POSTGRES_SSLMODE"
+          value = "require"
+        },
+        {
+          name = "ALLOWED_HOSTS"
+          value = var.allowed_hosts
+        },
+        {
+          name = "CORS_ALLOWED_ORIGINS"
+          value = "https://${var.cloudfront_domain_name}"
+        }
+      ]
+
+      secrets = [
+        {
+          name = "POSTGRES_PASSWORD"
+          valueFrom = var.db_password_arn
+        },
+        {
+          name = "SECRET_KEY"
+          valueFrom = var.django_secret_key_arn
+        }
+      ]
     }
   ])
 }
 
-# TODO check chat-gpt answer about the following resource
+
+data "aws_iam_policy_document" "ecs_infrastructure_assume_role" {
+  statement {
+    effect = "Allow"
+
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type = "Service"
+      identifiers = ["ecs.amazonaws.com"]
+    }
+
+  }
+}
+
+
+resource "aws_iam_role" "ecs_infrastructure_role" {
+  name = "${var.project-name}-ecs_infrastructure_role"
+
+  assume_role_policy = data.aws_iam_policy_document.ecs_infrastructure_assume_role.json
+}
+
+
+resource "aws_iam_role_policy_attachment" "ecs_infrastructure_attachment" {
+  role = aws_iam_role.ecs_infrastructure_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForLoadBalancers"
+}
+
+# TODO aws_ecs_service

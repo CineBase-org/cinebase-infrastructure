@@ -32,3 +32,22 @@ module "frontend" {
 }
 
 
+module "ssm" {
+  source = "./modules/ssm"
+
+  project-name      = var.project-name
+  db_password       = var.db_password
+  django_secret_key = var.django_secret_key
+  tmdb_api_key      = var.tmdb_api_key
+
+}
+
+module "database" {
+  source = "./modules/database"
+
+  project-name        = var.project-name
+  private_subnets_ids = module.network.private_subnets_ids
+  vpc_id              = module.network.vpc_id
+  ecs_ec2_sg_id       = module.backend.ecs_ec2_sg_id
+  db_password         = var.db_password
+}

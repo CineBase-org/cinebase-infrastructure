@@ -4,11 +4,13 @@ variable "front_bucket_name" {
 }
 
 variable "project-name" {
-  type = string
+  type        = string
+  description = "The name of the project"
 }
 
 variable "s3_origin_id" {
-  type = string
+  type        = string
+  description = "The origin ID for the S3 bucket"
 }
 
 variable "github_repo" {
