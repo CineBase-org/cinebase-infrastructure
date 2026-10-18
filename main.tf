@@ -51,3 +51,38 @@ module "database" {
   ecs_ec2_sg_id       = module.backend.ecs_ec2_sg_id
   db_password         = var.db_password
 }
+
+module "backend" {
+  source = "./modules/backend"
+
+  project-name                 = var.project-name
+  vpc_id                       = module.network.vpc_id
+  alb_sg_id                    = module.loadbalancer.alb_sg_id
+  ssm_parameter                = var.ssm_parameter
+  ecs_instance_type            = var.ecs_instance_type
+  public_subnets_ids           = module.network.public_subnets_ids
+  aws_region                   = var.aws_region
+  backend_image_tag            = var.backend_image_tag
+  image_repository_url         = module.ecr.image_repository_url
+  db_address                   = module.database.db_address
+  db_name                      = module.database.db_name
+  db_username                  = module.database.db_username
+  db_port                      = module.database.db_port
+  db_password_arn              = module.ssm.db_password_arn
+  django_secret_key_arn        = module.ssm.django_secret_key_arn
+  cloudfront_domain_name       = module.frontend.cloudfront_domain_name
+  allowed_hosts                = module.frontend.cloudfront_domain_name #звглушка для terraform fmt
+  blue_target_group_arn        = module.loadbalancer.blue_target_group_arn
+  green_target_group_arn       = module.loadbalancer.blue_target_group_arn
+  production_listener_rule_arn = module.loadbalancer.production_listener_rule_arn
+
+}
+
+module "loadbalancer" {
+  source = "./modules/loadbalancer"
+
+  project-name = var.project-name
+  vpc_id = module.network.vpc_id
+  public_subnets_ids = module.network.public_subnets_ids
+
+}

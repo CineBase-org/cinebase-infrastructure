@@ -66,49 +66,49 @@ resource "aws_lb_listener" "lb_backend_listener" {
 #TODO listener and listener rules
 
 resource "aws_lb_target_group" "green" {
-  name = "${var.project-name}-green"
-  protocol = "HTTP"
-  port = 8000
-  vpc_id = var.vpc_id
+  name        = "${var.project-name}-green"
+  protocol    = "HTTP"
+  port        = 8000
+  vpc_id      = var.vpc_id
   target_type = "instance"
 
   health_check {
-    path = "/health/"
+    path    = "/health/"
     matcher = "200"
-    port = "traffic-port"
+    port    = "traffic-port"
   }
 }
 
 resource "aws_lb_target_group" "blue" {
-  name = "${var.project-name}-blue"
-  protocol = "HTTP"
-  port = 8000
-  vpc_id = var.vpc_id
+  name        = "${var.project-name}-blue"
+  protocol    = "HTTP"
+  port        = 8000
+  vpc_id      = var.vpc_id
   target_type = "instance"
 
   health_check {
-    path = "/health/"
+    path    = "/health/"
     matcher = "200"
-    port = "traffic-port"
+    port    = "traffic-port"
   }
 }
 
 
 resource "aws_lb_listener_rule" "production" {
   listener_arn = aws_lb_listener.lb_backend_listener.arn
-  priority = 100
+  priority     = 100
 
   action {
     type = "forward"
 
     forward {
       target_group {
-        arn = aws_lb_target_group.blue.arn
+        arn    = aws_lb_target_group.blue.arn
         weight = 100
       }
 
       target_group {
-        arn =aws_lb_target_group.green.arn
+        arn    = aws_lb_target_group.green.arn
         weight = 0
       }
     }
