@@ -26,13 +26,7 @@ resource "aws_vpc_security_group_ingress_rule" "ecs-ec2-sg-ingress" {
   to_port     = 65535 # dynamic-port-range-end
   # will allow traffic from the ALB to the ECS EC2 instances on ephemeral ports
 }
-output "alb-sg_id" {
-  value = aws_security_group.alb-sg.id
-}
 
-output "alb-sg_arn" {
-  value = aws_security_group.alb-sg.arn
-}
 
 resource "aws_vpc_security_group_egress_rule" "ecs-ec2-sg-egress" {
   security_group_id = aws_security_group.ecs-ec2-sg.id
@@ -275,30 +269,30 @@ resource "aws_ecs_task_definition" "task_definition" {
           value = var.db_username
         },
         {
-          name = "POSTGRES_DB_PORT"
+          name  = "POSTGRES_DB_PORT"
           value = tostring(var.db_port)
         },
         {
-          name = "POSTGRES_SSLMODE"
+          name  = "POSTGRES_SSLMODE"
           value = "require"
         },
         {
-          name = "ALLOWED_HOSTS"
+          name  = "ALLOWED_HOSTS"
           value = var.allowed_hosts
         },
         {
-          name = "CORS_ALLOWED_ORIGINS"
+          name  = "CORS_ALLOWED_ORIGINS"
           value = "https://${var.cloudfront_domain_name}"
         }
       ]
 
       secrets = [
         {
-          name = "POSTGRES_PASSWORD"
+          name      = "POSTGRES_PASSWORD"
           valueFrom = var.db_password_arn
         },
         {
-          name = "SECRET_KEY"
+          name      = "SECRET_KEY"
           valueFrom = var.django_secret_key_arn
         }
       ]
@@ -314,7 +308,7 @@ data "aws_iam_policy_document" "ecs_infrastructure_assume_role" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["ecs.amazonaws.com"]
     }
 
@@ -330,8 +324,48 @@ resource "aws_iam_role" "ecs_infrastructure_role" {
 
 
 resource "aws_iam_role_policy_attachment" "ecs_infrastructure_attachment" {
-  role = aws_iam_role.ecs_infrastructure_role.name
+  role       = aws_iam_role.ecs_infrastructure_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForLoadBalancers"
 }
 
-# TODO aws_ecs_service
+
+resource "aws_ecs_cluster" "backend_cluster" {
+  name = "${var.project-name}-cluster"
+
+}
+
+
+resource "aws_ecs_service" "backend" {
+  name            = "cinebase-backend"
+  task_definition = aws_ecs_task_definition.task_definition.arn
+  cluster         = aws_ecs_cluster.backend_cluster.id
+  desired_count   = 2
+
+  # lifecycle {
+  #   ignore_changes = [desired_count]
+  # }
+  depends_on = [
+    aws_ecs_cluster_capacity_providers.ecs_cluster_capacity_providers,
+    aws_iam_role_policy_attachment.ecs_infrastructure_attachment
+  ]
+
+  deployment_configuration {
+    strategy             = "BLUE_GREEN"
+    bake_time_in_minutes = 10
+  }
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
+    weight            = 100
+  }
+
+  load_balancer {
+    target_group_arn = var.blue_target_group_arn
+    container_name   = "${var.project-name}-container"
+    container_port   = 8000
+    advanced_configuration {
+      alternate_target_group_arn = var.green_target_group_arn
+      production_listener_rule   = var.production_listener_rule_arn
+      role_arn                   = aws_iam_role.ecs_infrastructure_role.arn
+    }
+  }
+}

@@ -69,3 +69,17 @@ variable "cloudfront_domain_name" {
 variable "allowed_hosts" {
   type = string
 }
+
+# need output
+variable "blue_target_group_arn" {
+  type = string
+}
+
+variable "green_target_group_arn" {
+  type = string
+}
+
+variable "production_listener_rule_arn" {
+  type        = string
+  description = "lb listener rule arn for production listener"
+}
