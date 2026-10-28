@@ -92,6 +92,7 @@ resource "aws_launch_template" "ecs_ec2_launch_template" {
   user_data = base64encode(<<-EOF
               #!/bin/bash
               echo "ECS_CLUSTER=${aws_ecs_cluster.backend_cluster.name}" >> /etc/ecs/ecs.config
+              echo "ECS_RESERVED_MEMORY=768" >> /etc/ecs/ecs.config
               EOF
   )
 }
@@ -102,9 +103,9 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   force_delete              = true
   max_size                  = 2
   min_size                  = 0
+  desired_capacity          = 0
   health_check_grace_period = 300
   health_check_type         = "EC2"
-  desired_capacity          = 0
   protect_from_scale_in     = true
 
   launch_template {
@@ -131,6 +132,10 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
     value               = "${var.project-name}-ecs-ec2"
     propagate_at_launch = true
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.ecs_ec2_instance_role_policy_attachment
+  ]
 
 }
 
@@ -193,7 +198,8 @@ data "aws_iam_policy_document" "ecs_ssm_policy" {
 
     resources = [
       var.db_password_arn,
-      var.django_secret_key_arn
+      var.django_secret_key_arn,
+      var.tmdb_api_key_arn
     ]
   }
 }
@@ -221,6 +227,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_attachment" {
 
 resource "aws_ecs_task_definition" "task_definition" {
   family                   = "${var.project-name}-task-definition"
+  skip_destroy             = true
   requires_compatibilities = ["EC2"]
   network_mode             = "bridge"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
@@ -230,8 +237,8 @@ resource "aws_ecs_task_definition" "task_definition" {
       name              = "${var.project-name}-container"
       image             = "${var.image_repository_url}:${var.backend_image_tag}"
       cpu               = 256
-      memoryReservation = 384
-      memory            = 768
+      memoryReservation = 512
+      memory            = 640
       essential         = true
 
       portMappings = [
@@ -282,7 +289,7 @@ resource "aws_ecs_task_definition" "task_definition" {
         },
         {
           name  = "CORS_ALLOWED_ORIGINS"
-          value = "https://${var.cloudfront_domain_name}"
+          value = "https://${var.domain_name}"
         }
       ]
 
@@ -294,6 +301,10 @@ resource "aws_ecs_task_definition" "task_definition" {
         {
           name      = "SECRET_KEY"
           valueFrom = var.django_secret_key_arn
+        },
+        {
+          name      = "API_KEY"
+          valueFrom = var.tmdb_api_key_arn
         }
       ]
     }
@@ -341,12 +352,15 @@ resource "aws_ecs_service" "backend" {
   cluster         = aws_ecs_cluster.backend_cluster.id
   desired_count   = 2
 
-  # lifecycle {
-  #   ignore_changes = [desired_count]
-  # }
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+
   depends_on = [
     aws_ecs_cluster_capacity_providers.ecs_cluster_capacity_providers,
-    aws_iam_role_policy_attachment.ecs_infrastructure_attachment
+    aws_iam_role_policy_attachment.ecs_infrastructure_attachment,
+    aws_iam_role_policy_attachment.ecs_task_execution_attachment,
+    aws_iam_role_policy.ecs_ssm_policy
   ]
 
   deployment_configuration {

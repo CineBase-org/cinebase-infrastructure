@@ -31,3 +31,12 @@ variable "github_organization" {
 variable "github_oidc_provider_arn" {
   type = string
 }
+
+variable "acm_certificate_arn" {
+  type = string
+}
+
+variable "domain_name" {
+  description = "Base domain name for CineBase"
+  type        = string
+}

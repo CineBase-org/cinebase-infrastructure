@@ -62,6 +62,10 @@ variable "django_secret_key_arn" {
   type = string
 }
 
+variable "tmdb_api_key_arn" {
+  type = string
+}
+
 variable "cloudfront_domain_name" {
   type = string
 }
@@ -82,4 +86,9 @@ variable "green_target_group_arn" {
 variable "production_listener_rule_arn" {
   type        = string
   description = "lb listener rule arn for production listener"
+}
+
+variable "domain_name" {
+  description = "Base domain name for CineBase"
+  type        = string
 }

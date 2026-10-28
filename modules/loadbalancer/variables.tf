@@ -10,3 +10,7 @@ variable "vpc_id" {
 variable "public_subnets_ids" {
   type = list(string)
 }
+
+variable "backend_certificate_arn" {
+  type = string
+}

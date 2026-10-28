@@ -46,3 +46,23 @@ output "private_subnets_ids" {
 #  }
 
 
+# ============== ECR Outputs ==============
+
+output "image_repository_url" {
+  value = module.ecr.image_repository_url
+}
+
+output "image_repository_arn" {
+  description = "ECR repository ARN for IAM permissions"
+  value       = module.ecr.image_repository_arn
+}
+
+output "image_repository_name" {
+  description = "ECR repository name"
+  value       = module.ecr.image_repository_name
+}
+
+output "github_actions_role_arn_backend" {
+  description = "IAM Role ARN for Backend GitHub Actions"
+  value       = module.ecr.github_actions_role_arn_backend
+}
