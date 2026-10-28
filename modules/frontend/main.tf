@@ -50,6 +50,14 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_id                = var.s3_origin_id
   }
 
+  aliases = [var.domain_name]
+
+  viewer_certificate {
+    acm_certificate_arn      = var.acm_certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+  }
+
   enabled             = true
   is_ipv6_enabled     = true
   price_class         = "PriceClass_100"
@@ -65,6 +73,11 @@ resource "aws_cloudfront_distribution" "frontend" {
     viewer_protocol_policy = "redirect-to-https"
 
     compress = true
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.cloudfront_function.arn
+    }
   }
 
   restrictions {
@@ -72,10 +85,6 @@ resource "aws_cloudfront_distribution" "frontend" {
       restriction_type = "blacklist"
       locations        = ["RU", "BY"]
     }
-  }
-
-  viewer_certificate {
-    cloudfront_default_certificate = true
   }
 }
 
@@ -199,4 +208,11 @@ data "aws_iam_policy_document" "github_actions_policy" {
       "${aws_cloudfront_distribution.frontend.arn}"
     ]
   }
+}
+
+resource "aws_cloudfront_function" "cloudfront_function" {
+  name    = "${var.project-name}-func"
+  runtime = "cloudfront-js-2.0"
+  code    = file("${path.module}/spa-rewrite.js")
+  publish = true
 }

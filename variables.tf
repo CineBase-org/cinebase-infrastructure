@@ -3,6 +3,11 @@ variable "project-name" {
   type        = string
 }
 
+variable "domain_name" {
+  description = "Base domain name for CineBase"
+  type        = string
+}
+
 # ================== NETWORK ===================
 
 variable "vpc_cidr_block" {
@@ -53,10 +58,6 @@ variable "ecs_instance_type" {
   type = string
 }
 
-variable "public_subnets_ids" {
-  type = list(string)
-}
-
 variable "aws_region" {
   type = string
 }
@@ -65,9 +66,9 @@ variable "backend_image_tag" {
   type = string
 }
 
-# =================== DATABASE ===================
-
-
+variable "github_repo_back" {
+  type = string
+}
 
 # ============== SSM and DATABASE ================
 # add to .tfvars file
@@ -91,3 +92,12 @@ variable "tmdb_api_key" {
   ephemeral   = true
   description = "The API key for The Movie Database (TMDB)"
 }
+
+# ========== CLOUDFLARE =============
+
+variable "cloudflare_zone_id" {
+  type        = string
+  description = "Cloudflare DNS Zone ID"
+}
+
+# ============== ACM =============== add to .tfvars

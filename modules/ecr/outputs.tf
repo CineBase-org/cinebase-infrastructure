@@ -11,3 +11,8 @@ output "image_repository_name" {
   description = "ECR repository name"
   value       = aws_ecr_repository.image_repository.name
 }
+
+output "github_actions_role_arn_backend" {
+  description = "IAM Role ARN for Backend GitHub Actions"
+  value       = aws_iam_role.github_actions_role.arn
+}

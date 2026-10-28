@@ -48,7 +48,7 @@ resource "aws_db_instance" "db_instance" {
   vpc_security_group_ids  = [aws_security_group.db_security_group.id]
   username                = "${var.project-name}_admin"
   password_wo             = var.db_password
-  password_wo_version     = 1
+  password_wo_version     = 2
   identifier              = "${var.project-name}-postgres-db"
   db_name                 = "${var.project-name}_db"
   backup_retention_period = 7
