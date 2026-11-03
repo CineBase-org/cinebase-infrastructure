@@ -1,0 +1,217 @@
+
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/ECS",
+            "CPUUtilization",
+            "ClusterName", "${backend_cluster_name}",
+            "ServiceName", "${backend_service_name}"
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Average",
+        "title": "ECS CPU Utilization",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/ECS",
+            "MemoryUtilization",
+            "ClusterName", "${backend_cluster_name}",
+            "ServiceName", "${backend_service_name}"
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Average",
+        "title": "ECS Memory Utilization",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "RequestCount",
+            "LoadBalancer", "${alb_arn_suffix}"
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Sum",
+        "title": "ALB Request Count",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "TargetResponseTime",
+            "LoadBalancer", "${alb_arn_suffix}"
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "p95",
+        "title": "ALB TargetResponseTime",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 12,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "HTTPCode_ELB_5XX_Count",
+            "LoadBalancer", "${alb_arn_suffix}",
+            { "label": "ALB 5xx" }
+          ],
+          [
+            "AWS/ApplicationELB",
+            "HTTPCode_Target_5XX_Count",
+            "LoadBalancer", "${alb_arn_suffix}",
+            { "label": "Backend 5xx" }
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Sum",
+        "title": "HTTPS HTTP 5xx Errors",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "HealthyHostCount",
+            "LoadBalancer", "${alb_arn_suffix}",
+            "TargetGroup", "${blue_target_group_arn_suffix}",
+            { "label": "Blue" }
+          ],
+          [
+            "AWS/ApplicationELB",
+            "HealthyHostCount",
+            "LoadBalancer", "${alb_arn_suffix}",
+            "TargetGroup", "${green_target_group_arn_suffix}",
+            { "label": "Green" }
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Minimum",
+        "title": "Healthy Host Count (Blue/Green)",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 18,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/EC2",
+            "CPUUtilization",
+            "AutoScalingGroupName", "${backend_asg_name}"
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Average",
+        "title": "CPU Utilization",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 18,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/EC2",
+            "CPUCreditBalance",
+            "AutoScalingGroupName", "${backend_asg_name}"
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Minimum",
+        "title": "CPU Credit Balance",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 6,
+      "y": 12,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/AutoScaling",
+            "GroupDesiredCapacity",
+            "AutoScalingGroupName", "${backend_asg_name}"
+          ],
+          [
+            "AWS/AutoScaling",
+            "GroupInServiceInstances",
+            "AutoScalingGroupName", "${backend_asg_name}"
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Average",
+        "title": "Auto Scaling Group Capacity",
+        "view": "timeSeries"
+      }
+    }
+  ]
+}

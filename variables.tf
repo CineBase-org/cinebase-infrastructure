@@ -100,4 +100,8 @@ variable "cloudflare_zone_id" {
   description = "Cloudflare DNS Zone ID"
 }
 
-# ============== ACM =============== add to .tfvars
+# ========== SNS =============
+
+variable "alert_email" {
+  type = string
+}

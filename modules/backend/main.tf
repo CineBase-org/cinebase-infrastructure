@@ -107,6 +107,12 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   health_check_grace_period = 300
   health_check_type         = "EC2"
   protect_from_scale_in     = true
+  enabled_metrics = [
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances"
+  ]
+
+  metrics_granularity = "1Minute"
 
   launch_template {
     id      = aws_launch_template.ecs_ec2_launch_template.id

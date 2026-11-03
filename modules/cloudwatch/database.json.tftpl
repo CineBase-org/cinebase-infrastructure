@@ -1,0 +1,217 @@
+
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "${db_instance_identifier}"]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Average",
+        "title": "RDS CPU Utilization",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 4,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/RDS",
+            "FreeStorageSpace",
+            "DBInstanceIdentifier",
+            "${db_instance_identifier}",
+            { "id": "m1", "visible": false, "region": "${aws_region}" }
+          ],
+          [
+            {
+              "expression": "100 * (1 - m1 / (${db_instance_allocated_storage} * 1024 * 1024 * 1024))",
+              "id": "e1",
+              "label": "Storage Used (%)",
+              "region": "${aws_region}"
+            }
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "stat": "Minimum",
+        "title": "RDS Storage Used (%)",
+        "view": "gauge",
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "showUnits": false
+          }
+        },
+        "singleValueFullPrecision": false,
+        "liveData": false,
+        "legend": {
+          "position": "hidden"
+        },
+        "stacked": false
+      }
+    },
+    {
+      "type": "metric",
+      "x": 22,
+      "y": 0,
+      "width": 2,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/RDS",
+            "FreeStorageSpace",
+            "DBInstanceIdentifier",
+            "${db_instance_identifier}",
+            { "id": "m1", "visible": false }
+          ],
+          [
+            {
+              "expression": "${db_instance_allocated_storage} - m1 / (1024 * 1024 * 1024)",
+              "id": "e1",
+              "label": "Used (GiB)"
+            }
+          ]
+        ],
+        "period": 300,
+        "region": "${aws_region}",
+        "sparkline": false,
+        "stat": "Minimum",
+        "title": "Storage Used (GiB)",
+        "view": "singleValue",
+        "yAxis": {
+          "left": {
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/RDS",
+            "FreeableMemory",
+            "DBInstanceIdentifier",
+            "${db_instance_identifier}",
+            { "region": "${aws_region}" }
+          ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "${aws_region}",
+        "period": 300,
+        "stat": "Minimum"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 0,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/RDS",
+            "DatabaseConnections",
+            "DBInstanceIdentifier",
+            "${db_instance_identifier}",
+            { "region": "${aws_region}" }
+          ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "${aws_region}",
+        "period": 300,
+        "stat": "Average",
+        "title": "RDS Database Connections"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/RDS", "ReadIOPS", "DBInstanceIdentifier", "${db_instance_identifier}"],
+          [".", "WriteIOPS", ".", "."]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "${aws_region}",
+        "period": 300,
+        "stat": "Average",
+        "title": "RDS Read / Write IOPS"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/RDS", "WriteLatency", "DBInstanceIdentifier", "${db_instance_identifier}"],
+          [".", "ReadLatency", ".", "."]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "${aws_region}",
+        "period": 300,
+        "stat": "Average",
+        "title": "RDS Read / Write Latency"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "AWS/RDS",
+            "CPUCreditBalance",
+            "DBInstanceIdentifier",
+            "${db_instance_identifier}",
+            { "stat": "Minimum" }
+          ],
+          [
+            ".",
+            "CPUSurplusCreditBalance",
+            ".",
+            ".",
+            { "stat": "Maximum" }
+          ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "${aws_region}",
+        "period": 300,
+        "title": "RDS CPU Credits"
+      }
+    }
+  ]
+}

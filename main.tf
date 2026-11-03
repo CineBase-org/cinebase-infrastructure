@@ -117,6 +117,23 @@ module "backend" {
   domain_name                  = var.domain_name
 }
 
+module "cloudwatch" {
+  source = "./modules/cloudwatch"
+
+  project-name                  = var.project-name
+  aws_region                    = var.aws_region
+  backend_cluster_name          = module.backend.backend_cluster_name
+  backend_service_name          = module.backend.backend_service_name
+  alb_arn_suffix                = module.loadbalancer.alb_arn_suffix
+  blue_target_group_arn_suffix  = module.loadbalancer.blue_target_group_arn_suffix
+  green_target_group_arn_suffix = module.loadbalancer.green_target_group_arn_suffix
+  backend_asg_name              = module.backend.backend_asg_name
+  db_instance_identifier        = module.database.db_instance_identifier
+  db_instance_allocated_storage = module.database.db_instance_allocated_storage
+  cloudfront_distribution_id    = module.frontend.cloudfront_distribution_id
+  alert_email                   = var.alert_email
+}
+
 
 module "acm_frontend" {
   source      = "./modules/acm"
