@@ -35,17 +35,6 @@ output "private_subnets_ids" {
   value = module.network.private_subnets_ids
 }
 
-# === Load Balancer Outputs ===
-
-#  output "alb-gs_id" {
-#    value = module.loadbalancer.alb-sg.id
-#  }
-
-#  output "alb-gs_arn" {
-#    value = module.loadbalancer.alb-sg.arn
-#  }
-
-
 # ============== ECR Outputs ==============
 
 output "image_repository_url" {
@@ -65,4 +54,12 @@ output "image_repository_name" {
 output "github_actions_role_arn_backend" {
   description = "IAM Role ARN for Backend GitHub Actions"
   value       = module.ecr.github_actions_role_arn_backend
+}
+
+output "esc_cluster_name" {
+  value = module.backend.esc_cluster_name
+}
+
+output "esc_service_name" {
+  value = module.backend.esc_service_name
 }

@@ -91,4 +91,47 @@ data "aws_iam_policy_document" "github_actions_policy" {
     ]
   }
 
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ecs:DescribeTaskDefinition",
+      "ecs:RegisterTaskDefinition",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ecs:UpdateService",
+      "ecs:DescribeServices",
+    ]
+
+    resources = [
+      var.ecs_service_arn
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "iam:PassRole"
+    ]
+
+    resources = [
+      var.ecs_task_execution_role_arn
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["ecs-tasks.amazonaws.com"]
+    }
+
+  }
+
 }

@@ -47,11 +47,13 @@ module "github-oidc" {
 
 
 module "ecr" {
-  source                   = "./modules/ecr"
-  project-name             = var.project-name
-  github_oidc_provider_arn = module.github-oidc.github_oidc_provider_arn
-  github_organization      = var.github_organization
-  github_repo_back         = var.github_repo_back
+  source                      = "./modules/ecr"
+  project-name                = var.project-name
+  github_oidc_provider_arn    = module.github-oidc.github_oidc_provider_arn
+  github_organization         = var.github_organization
+  github_repo_back            = var.github_repo_back
+  ecs_task_execution_role_arn = module.backend.ecs_task_execution_role_arn
+  ecs_service_arn             = module.backend.ecs_service_arn
 }
 
 

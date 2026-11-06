@@ -13,3 +13,19 @@ output "backend_service_name" {
 output "backend_asg_name" {
   value = aws_autoscaling_group.auto_scaling_group.name
 }
+
+output "esc_cluster_name" {
+  value = aws_ecs_cluster.backend_cluster.name
+}
+
+output "esc_service_name" {
+  value = aws_ecs_service.backend.name
+}
+
+output "ecs_task_execution_role_arn" {
+  value = aws_iam_role.ecs_task_execution_role.arn
+}
+
+output "ecs_service_arn" {
+  value = aws_ecs_service.backend.arn
+}
