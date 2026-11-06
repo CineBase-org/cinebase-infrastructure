@@ -14,3 +14,11 @@ variable "github_organization" {
 variable "github_repo_back" {
   type = string
 }
+
+variable "ecs_task_execution_role_arn" {
+  type = string
+}
+
+variable "ecs_service_arn" {
+  type = string
+}
