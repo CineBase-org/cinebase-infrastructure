@@ -22,3 +22,11 @@ variable "ecs_task_execution_role_arn" {
 variable "ecs_service_arn" {
   type = string
 }
+
+variable "ecs_task_definition_arn_without_revision" {
+  type = string
+}
+
+variable "ecs_cluster_arn" {
+  type = string
+}

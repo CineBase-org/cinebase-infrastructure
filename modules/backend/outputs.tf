@@ -29,3 +29,11 @@ output "ecs_task_execution_role_arn" {
 output "ecs_service_arn" {
   value = aws_ecs_service.backend.arn
 }
+
+output "ecs_task_definition_arn_without_revision" {
+  value = aws_ecs_task_definition.task_definition.arn_without_revision
+}
+
+output "ecs_cluster_arn" {
+  value = aws_ecs_cluster.backend_cluster.arn
+}

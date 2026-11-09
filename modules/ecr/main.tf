@@ -119,6 +119,30 @@ data "aws_iam_policy_document" "github_actions_policy" {
     effect = "Allow"
 
     actions = [
+      "ecs:RunTask",
+    ]
+
+    resources = [
+      "${var.ecs_task_definition_arn_without_revision}:*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ecs:DescribeTasks",
+    ]
+
+    resources = [
+      "${replace(var.ecs_cluster_arn, ":cluster/", ":task/")}/*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
       "iam:PassRole"
     ]
 
