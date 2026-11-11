@@ -9,6 +9,13 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "5.27.0"
     }
+
+    archive = {
+      source  = "hashicorp/archive"
+      version = "2.8.1"
+    }
+
+
   }
   backend "s3" {
     bucket       = "team-project-remote-state-976134557491-eu-central-1-an"
@@ -16,6 +23,8 @@ terraform {
     region       = "eu-central-1"
     use_lockfile = true
   }
+
+
 }
 
 provider "cloudflare" {

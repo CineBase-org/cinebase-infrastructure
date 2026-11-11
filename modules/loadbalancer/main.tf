@@ -153,3 +153,37 @@ resource "aws_lb_listener_rule" "production" {
     }
   }
 }
+
+resource "aws_lb_listener_rule" "smoke_test" {
+  listener_arn = aws_lb_listener.lb_backend_listener_https.arn
+  priority     = 50
+
+  lifecycle {
+    ignore_changes = [
+      action[0].forward[0].target_group # have to remember that if i'm gonna change TG arn i have to off ignore mode
+    ]
+  }
+
+  action {
+    type = "forward"
+
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.blue.arn
+        weight = 100
+      }
+
+      target_group {
+        arn    = aws_lb_target_group.green.arn
+        weight = 0
+      }
+    }
+  }
+
+  condition {
+    http_header {
+      http_header_name = "X-Smoke-Test"
+      values           = ["true"]
+    }
+  }
+}

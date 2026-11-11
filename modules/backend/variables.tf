@@ -92,3 +92,18 @@ variable "domain_name" {
   description = "Base domain name for CineBase"
   type        = string
 }
+
+variable "smoke_test_listener_rule_arn" {
+  type        = string
+  description = "lb listener rule arn for smoke test listener"
+}
+
+variable "lambda_function_arn" {
+  type        = string
+  description = "ARN of the Lambda function for smoke tests"
+}
+
+variable "ecs_hook_role_arn" {
+  type        = string
+  description = "ARN of the IAM role for ECS hook"
+}

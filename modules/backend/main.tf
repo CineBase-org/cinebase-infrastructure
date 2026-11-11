@@ -372,6 +372,12 @@ resource "aws_ecs_service" "backend" {
   deployment_configuration {
     strategy             = "BLUE_GREEN"
     bake_time_in_minutes = 10
+
+    lifecycle_hook {
+      hook_target_arn  = var.lambda_function_arn
+      role_arn         = var.ecs_hook_role_arn
+      lifecycle_stages = ["PRE_PRODUCTION_TRAFFIC_SHIFT"]
+    }
   }
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
@@ -385,6 +391,7 @@ resource "aws_ecs_service" "backend" {
     advanced_configuration {
       alternate_target_group_arn = var.green_target_group_arn
       production_listener_rule   = var.production_listener_rule_arn
+      test_listener_rule         = var.smoke_test_listener_rule_arn
       role_arn                   = aws_iam_role.ecs_infrastructure_role.arn
     }
   }
