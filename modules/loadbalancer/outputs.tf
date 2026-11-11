@@ -32,3 +32,7 @@ output "blue_target_group_arn_suffix" {
 output "green_target_group_arn_suffix" {
   value = aws_lb_target_group.green.arn_suffix
 }
+
+output "smoke_test_listener_rule_arn" {
+  value = aws_lb_listener_rule.smoke_test.arn
+}

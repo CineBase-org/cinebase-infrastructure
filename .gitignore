@@ -34,14 +34,10 @@ kubeconfig
 
 
 # =========================
-# Helm
+# smoke test
 # =========================
 
-# Packaged Helm charts
-*.tgz
-
-# Helm cache
-.helm/
+lambda/smoke_tests.zip
 
 
 # =========================

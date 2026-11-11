@@ -119,6 +119,17 @@ module "backend" {
   green_target_group_arn       = module.loadbalancer.green_target_group_arn
   production_listener_rule_arn = module.loadbalancer.production_listener_rule_arn
   domain_name                  = var.domain_name
+  smoke_test_listener_rule_arn = module.loadbalancer.smoke_test_listener_rule_arn
+  lambda_function_arn          = module.lambda.lambda_function_arn
+  ecs_hook_role_arn            = module.lambda.ecs_hook_role_arn
+}
+
+module "lambda" {
+  source = "./modules/lambda"
+
+  project-name                 = var.project-name
+  domain_name                  = var.domain_name
+  smoke_test_listener_rule_arn = module.loadbalancer.smoke_test_listener_rule_arn
 }
 
 module "cloudwatch" {
