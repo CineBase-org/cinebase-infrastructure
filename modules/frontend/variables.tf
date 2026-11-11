@@ -40,3 +40,8 @@ variable "domain_name" {
   description = "Base domain name for CineBase"
   type        = string
 }
+
+variable "bucket_regional_domain_name" {
+  description = "Regional domain name of the S3 bucket for avatars"
+  type        = string
+}

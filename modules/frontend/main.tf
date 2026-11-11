@@ -42,12 +42,31 @@ data "aws_cloudfront_cache_policy" "frontend_cache_policy" {
   name = "Managed-CachingOptimized"
 }
 
+data "aws_cloudfront_cache_policy" "avatars_cache_policy" {
+  name = "Managed-CachingDisabled"
+}
 
 resource "aws_cloudfront_distribution" "frontend" {
   origin {
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend_oac.id
     origin_id                = var.s3_origin_id
+  }
+
+  origin {
+    domain_name              = var.bucket_regional_domain_name
+    origin_access_control_id = aws_cloudfront_origin_access_control.frontend_oac.id
+    origin_id                = "avatars-s3"
+  }
+
+  ordered_cache_behavior {
+    path_pattern           = "/avatars/*"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = "avatars-s3"
+    cache_policy_id        = data.aws_cloudfront_cache_policy.avatars_cache_policy.id
+    viewer_protocol_policy = "redirect-to-https"
+    compress               = true
   }
 
   aliases = [var.domain_name]

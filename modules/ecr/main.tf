@@ -147,7 +147,8 @@ data "aws_iam_policy_document" "github_actions_policy" {
     ]
 
     resources = [
-      var.ecs_task_execution_role_arn
+      var.ecs_task_execution_role_arn,
+      var.backend_task_role_arn
     ]
 
     condition {

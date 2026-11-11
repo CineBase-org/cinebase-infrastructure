@@ -107,3 +107,8 @@ variable "ecs_hook_role_arn" {
   type        = string
   description = "ARN of the IAM role for ECS hook"
 }
+
+variable "cloudfront_distribution_arn" {
+  type        = string
+  description = "ARN of the CloudFront distribution"
+}
