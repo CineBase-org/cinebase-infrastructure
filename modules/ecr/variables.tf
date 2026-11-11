@@ -30,3 +30,7 @@ variable "ecs_task_definition_arn_without_revision" {
 variable "ecs_cluster_arn" {
   type = string
 }
+
+variable "backend_task_role_arn" {
+  type = string
+}

@@ -237,6 +237,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   requires_compatibilities = ["EC2"]
   network_mode             = "bridge"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.backend_task_role.arn
 
   container_definitions = jsonencode([
     {
@@ -296,7 +297,16 @@ resource "aws_ecs_task_definition" "task_definition" {
         {
           name  = "CORS_ALLOWED_ORIGINS"
           value = "https://${var.domain_name}"
-        }
+        },
+        {
+          name  = "AWS_S3_REGION_NAME"
+          value = var.aws_region
+        },
+        {
+          name  = "AWS_STORAGE_BUCKET_NAME"
+          value = aws_s3_bucket.user_avatars_bucket.bucket
+        },
+
       ]
 
       secrets = [
@@ -395,4 +405,108 @@ resource "aws_ecs_service" "backend" {
       role_arn                   = aws_iam_role.ecs_infrastructure_role.arn
     }
   }
+}
+
+
+
+# ============= user avatars =============
+
+resource "aws_s3_bucket" "user_avatars_bucket" {
+  bucket        = "${var.project-name}-user-avatars"
+  force_destroy = true
+
+  tags = {
+    Name = "${var.project-name}-user-avatars"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "user_avatars_bucket_public_access_block" {
+  bucket = aws_s3_bucket.user_avatars_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_policy" "user_avatars_bucket_policy" {
+  bucket = aws_s3_bucket.user_avatars_bucket.id
+  policy = data.aws_iam_policy_document.user_avatars_policy.json
+}
+
+data "aws_iam_policy_document" "task_role_assume_policy" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRole"
+    ]
+
+    principals {
+      type = "Service"
+
+      identifiers = [
+        "ecs-tasks.amazonaws.com"
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "backend_task_role" {
+  name = "${var.project-name}-backend-task-role"
+
+  assume_role_policy = data.aws_iam_policy_document.task_role_assume_policy.json
+
+}
+
+data "aws_iam_policy_document" "user_avatars_policy" {
+  statement {
+    sid    = "AllowCloudFrontServicePrincipalReadOnly"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetObject",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.user_avatars_bucket.arn}/*"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values = [
+        var.cloudfront_distribution_arn
+      ]
+    }
+  }
+}
+
+
+data "aws_iam_policy_document" "avatar_access" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject"
+    ]
+
+    resources = [
+      "${aws_s3_bucket.user_avatars_bucket.arn}/avatars/*"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "avatar_access" {
+  name = "${var.project-name}-avatar-access"
+
+  role   = aws_iam_role.backend_task_role.id
+  policy = data.aws_iam_policy_document.avatar_access.json
 }

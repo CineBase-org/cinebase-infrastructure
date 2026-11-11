@@ -37,3 +37,11 @@ output "ecs_task_definition_arn_without_revision" {
 output "ecs_cluster_arn" {
   value = aws_ecs_cluster.backend_cluster.arn
 }
+
+output "backend_task_role_arn" {
+  value = aws_iam_role.backend_task_role.arn
+}
+
+output "bucket_regional_domain_name" {
+  value = aws_s3_bucket.user_avatars_bucket.bucket_regional_domain_name
+}

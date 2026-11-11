@@ -56,21 +56,23 @@ module "ecr" {
   ecs_service_arn                          = module.backend.ecs_service_arn
   ecs_task_definition_arn_without_revision = module.backend.ecs_task_definition_arn_without_revision
   ecs_cluster_arn                          = module.backend.ecs_cluster_arn
+  backend_task_role_arn                    = module.backend.backend_task_role_arn
 }
 
 
 module "frontend" {
   source = "./modules/frontend"
 
-  project-name             = var.project-name
-  front_bucket_name        = var.front_bucket_name
-  s3_origin_id             = var.s3_origin_id
-  github_repo              = var.github_repo
-  github_organization      = var.github_organization
-  github_environment       = var.github_environment
-  github_oidc_provider_arn = module.github-oidc.github_oidc_provider_arn
-  acm_certificate_arn      = aws_acm_certificate_validation.certificates["frontend"].certificate_arn
-  domain_name              = var.domain_name
+  project-name                = var.project-name
+  front_bucket_name           = var.front_bucket_name
+  s3_origin_id                = var.s3_origin_id
+  github_repo                 = var.github_repo
+  github_organization         = var.github_organization
+  github_environment          = var.github_environment
+  github_oidc_provider_arn    = module.github-oidc.github_oidc_provider_arn
+  acm_certificate_arn         = aws_acm_certificate_validation.certificates["frontend"].certificate_arn
+  domain_name                 = var.domain_name
+  bucket_regional_domain_name = module.backend.bucket_regional_domain_name
 }
 
 
@@ -122,6 +124,7 @@ module "backend" {
   smoke_test_listener_rule_arn = module.loadbalancer.smoke_test_listener_rule_arn
   lambda_function_arn          = module.lambda.lambda_function_arn
   ecs_hook_role_arn            = module.lambda.ecs_hook_role_arn
+  cloudfront_distribution_arn  = module.frontend.cloudfront_distribution_arn
 }
 
 module "lambda" {
