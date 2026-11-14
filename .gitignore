@@ -12,6 +12,7 @@ crash.*.log
 .terraformrc
 terraform.rc
 tfplan
+scheduler-test.json
 
 # Terraform variable files
 *.tfvars
