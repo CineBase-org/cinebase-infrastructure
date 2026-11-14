@@ -56,11 +56,17 @@ data "aws_iam_policy_document" "ecs_ec2_assume_role_policy" {
   }
 }
 
+resource "aws_iam_role_policy_attachment" "ecs_ec2_ssm_instance_role_policy_attachment" {
+  role       = aws_iam_role.ecs_ec2_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 
 resource "aws_iam_role_policy_attachment" "ecs_ec2_instance_role_policy_attachment" {
   role       = aws_iam_role.ecs_ec2_instance_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
+
 
 
 resource "aws_iam_instance_profile" "ecs_ec2_instance_profile" {
@@ -306,6 +312,10 @@ resource "aws_ecs_task_definition" "task_definition" {
           name  = "AWS_STORAGE_BUCKET_NAME"
           value = aws_s3_bucket.user_avatars_bucket.bucket
         },
+        {
+          name  = "AWS_S3_CUSTOM_DOMAIN"
+          value = var.domain_name
+        }
 
       ]
 
