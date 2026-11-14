@@ -1,0 +1,31 @@
+{
+  "Name": "cinebase-scheduler-test",
+  "ScheduleExpression": "at(2026-11-14T14:45:57)",
+  "ScheduleExpressionTimezone": "UTC",
+  "FlexibleTimeWindow": {
+    "Mode": "OFF"
+  },
+  "ActionAfterCompletion": "DELETE",
+  "State": "ENABLED",
+  "Target": {
+    "Arn": "arn:aws:ecs:eu-central-1:976134557491:cluster/cinebase-cluster",
+    "EcsParameters": {
+      "CapacityProviderStrategy": [
+        {
+          "base": 0,
+          "capacityProvider": "cinebase-ecs-capacity-provider",
+          "weight": 1
+        }
+      ],
+      "EnableECSManagedTags": false,
+      "EnableExecuteCommand": false,
+      "TaskCount": 1,
+      "TaskDefinitionArn": "arn:aws:ecs:eu-central-1:976134557491:task-definition/cinebase-task-definition:14"
+    },
+    "Input": "{\"containerOverrides\":[{\"command\":[\"python\",\"manage.py\",\"import_movies\",\"--source\",\"new\"],\"name\":\"cinebase-container\"}]}",
+    "RetryPolicy": {
+      "MaximumRetryAttempts": 0
+    },
+    "RoleArn": "arn:aws:iam::976134557491:role/cinebase-scheduler-role"
+  }
+}

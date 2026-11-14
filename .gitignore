@@ -11,6 +11,7 @@ crash.*.log
 .terraform.tfstate.lock.info
 .terraformrc
 terraform.rc
+tfplan
 
 # Terraform variable files
 *.tfvars
@@ -38,7 +39,7 @@ kubeconfig
 # =========================
 
 lambda/smoke_tests.zip
-
+*.zip
 
 # =========================
 # AWS / credentials
