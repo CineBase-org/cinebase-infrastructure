@@ -93,6 +93,27 @@ variable "tmdb_api_key" {
   description = "The API key for The Movie Database (TMDB)"
 }
 
+variable "stripe_secret_key" {
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+  description = "The secret key for Stripe"
+}
+
+variable "stripe_webhook_secret" {
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+  description = "The webhook secret for Stripe"
+}
+
+variable "stripe_price_id" {
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+  description = "The price ID for Stripe"
+}
+
 # ========== CLOUDFLARE =============
 
 variable "cloudflare_zone_id" {

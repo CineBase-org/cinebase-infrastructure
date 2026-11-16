@@ -79,11 +79,14 @@ module "frontend" {
 module "ssm" {
   source = "./modules/ssm"
 
-  project-name      = var.project-name
-  db_password       = var.db_password
-  django_secret_key = var.django_secret_key
-  tmdb_api_key      = var.tmdb_api_key
-
+  project-name          = var.project-name
+  db_password           = var.db_password
+  django_secret_key     = var.django_secret_key
+  tmdb_api_key          = var.tmdb_api_key
+  stripe_secret_key     = var.stripe_secret_key
+  stripe_webhook_secret = var.stripe_webhook_secret
+  stripe_price_id       = var.stripe_price_id
+  domain_name           = var.domain_name
 }
 
 module "database" {
@@ -125,6 +128,12 @@ module "backend" {
   lambda_function_arn          = module.lambda.lambda_function_arn
   ecs_hook_role_arn            = module.lambda.ecs_hook_role_arn
   cloudfront_distribution_arn  = module.frontend.cloudfront_distribution_arn
+  stripe_secret_key_arn        = module.ssm.stripe_secret_key_arn
+  stripe_webhook_secret_arn    = module.ssm.stripe_webhook_secret_arn
+  stripe_price_id_arn          = module.ssm.stripe_price_id_arn
+  stripe_cancel_url_arn        = module.ssm.stripe_cancel_url_arn
+  stripe_success_url_arn       = module.ssm.stripe_success_url_arn
+  stripe_portal_return_url_arn = module.ssm.stripe_portal_return_url_arn
 }
 
 module "lambda" {

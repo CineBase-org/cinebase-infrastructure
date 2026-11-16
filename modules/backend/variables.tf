@@ -66,6 +66,37 @@ variable "tmdb_api_key_arn" {
   type = string
 }
 
+
+
+
+
+
+variable "stripe_secret_key_arn" {
+  type = string
+}
+
+variable "stripe_webhook_secret_arn" {
+  type = string
+}
+
+variable "stripe_price_id_arn" {
+  type = string
+}
+
+variable "stripe_cancel_url_arn" {
+  type = string
+}
+
+variable "stripe_success_url_arn" {
+  type = string
+}
+
+variable "stripe_portal_return_url_arn" {
+  type = string
+}
+
+
+
 variable "cloudfront_domain_name" {
   type = string
 }
