@@ -89,6 +89,13 @@ module "ssm" {
   domain_name           = var.domain_name
 }
 
+module "analysts" {
+  source = "./modules/analists"
+
+  project-name = var.project-name
+  aws_region   = var.aws_region
+}
+
 module "database" {
   source = "./modules/database"
 
