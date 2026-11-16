@@ -211,7 +211,13 @@ data "aws_iam_policy_document" "ecs_ssm_policy" {
     resources = [
       var.db_password_arn,
       var.django_secret_key_arn,
-      var.tmdb_api_key_arn
+      var.tmdb_api_key_arn,
+      var.stripe_secret_key_arn,
+      var.stripe_webhook_secret_arn,
+      var.stripe_price_id_arn,
+      var.stripe_cancel_url_arn,
+      var.stripe_success_url_arn,
+      var.stripe_portal_return_url_arn
     ]
   }
 }
@@ -331,6 +337,30 @@ resource "aws_ecs_task_definition" "task_definition" {
         {
           name      = "API_KEY"
           valueFrom = var.tmdb_api_key_arn
+        },
+        {
+          name      = "STRIPE_SECRET_KEY"
+          valueFrom = var.stripe_secret_key_arn
+        },
+        {
+          name      = "STRIPE_WEBHOOK_SECRET"
+          valueFrom = var.stripe_webhook_secret_arn
+        },
+        {
+          name      = "STRIPE_PRICE_ID"
+          valueFrom = var.stripe_price_id_arn
+        },
+        {
+          name      = "STRIPE_CANCEL_URL"
+          valueFrom = var.stripe_cancel_url_arn
+        },
+        {
+          name      = "STRIPE_SUCCESS_URL"
+          valueFrom = var.stripe_success_url_arn
+        },
+        {
+          name      = "STRIPE_PORTAL_RETURN_URL"
+          valueFrom = var.stripe_portal_return_url_arn
         }
       ]
     }
